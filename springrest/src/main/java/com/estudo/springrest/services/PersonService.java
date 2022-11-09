@@ -55,4 +55,13 @@ public class PersonService {
 
         return personRepository.save(entity);
     }
+
+    public void delete(Long id) {
+        logger.info("Deletando pessoa");
+
+        var entity = personRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Nenhuma pessoa encontrada"));
+        
+        personRepository.delete(entity);
+    }
 }
