@@ -18,7 +18,7 @@ import com.estudo.springrest.data.VO.V1.PersonVO;
 import com.estudo.springrest.services.PersonService;
 
 @RestController
-@RequestMapping("/PersonVO")
+@RequestMapping("/person")
 public class PersonController {
     
     @Autowired
