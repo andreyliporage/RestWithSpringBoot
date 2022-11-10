@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 
 import com.estudo.springrest.exceptions.ResourceNotFoundException;
 import com.estudo.springrest.mapper.DozerMapper;
+import com.estudo.springrest.mapper.custom.PersonV2Mapper;
 import com.estudo.springrest.model.Person;
 import com.estudo.springrest.data.VO.V1.PersonVO;
+import com.estudo.springrest.data.VO.V2.PersonVOV2;
 import com.estudo.springrest.repositories.PersonRepository;
 
 @Service
@@ -21,6 +23,8 @@ public class PersonService {
     
     @Autowired
     private PersonRepository personRepository;
+    @Autowired
+    private PersonV2Mapper personV2Mapper;
 
     public PersonVO findById(Long id) {
         logger.info("Buscado pessoa");
@@ -46,6 +50,13 @@ public class PersonService {
         logger.info("Criando pessoa");
         Person entity = DozerMapper.parseObject(person, Person.class);
         PersonVO vo = DozerMapper.parseObject(personRepository.save(entity), PersonVO.class);
+        return vo;
+    }
+
+    public PersonVOV2 createV2(PersonVOV2 person) {
+        logger.info("Criando pessoa v2");
+        Person entity = personV2Mapper.convertVoToEntity(person);
+        PersonVOV2 vo = personV2Mapper.convertEntityToVo(personRepository.save(entity));
         return vo;
     }
 
