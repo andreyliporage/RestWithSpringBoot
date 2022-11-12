@@ -4,7 +4,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
+import com.estudo.springrest.controllers.PersonController;
 import org.springframework.beans.factory.annotation.Autowired;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.stereotype.Service;
 
 import com.estudo.springrest.exceptions.ResourceNotFoundException;
@@ -19,7 +22,7 @@ import com.estudo.springrest.repositories.PersonRepository;
 public class PersonService {
     
     private final AtomicLong counter = new AtomicLong();
-    private Logger logger = Logger.getLogger(PersonService.class.getName());
+    private final Logger logger = Logger.getLogger(PersonService.class.getName());
     
     @Autowired
     private PersonRepository personRepository;
@@ -29,7 +32,7 @@ public class PersonService {
     public PersonVO findById(Long id) {
         logger.info("Buscado pessoa");
         var person = new PersonVO();
-        person.setId(counter.getAndIncrement());
+        person.setKey(counter.getAndIncrement());
         person.setFirstName("Andrey");
         person.setLastName("Matos");
         person.setaddress("Rio de Janeiro - Rio de Janeiro");
@@ -38,32 +41,40 @@ public class PersonService {
         var entity = personRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Nenhuma pessoa encontrada"));
         
-        return DozerMapper.parseObject(entity, PersonVO.class);
+        var vo = DozerMapper.parseObject(entity, PersonVO.class);
+        vo.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
+        return vo;
     }
 
     public List<PersonVO> findAll() {
         logger.info("Procurando pessoas");
-        return DozerMapper.parseListObjects(personRepository.findAll(), PersonVO.class);
+        var vos =  DozerMapper.parseListObjects(personRepository.findAll(), PersonVO.class);
+        vos.stream().forEach(p -> {
+            p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel());
+        });
+        return vos;
     }
 
     public PersonVO create(PersonVO person) {
         logger.info("Criando pessoa");
-        Person entity = DozerMapper.parseObject(person, Person.class);
-        PersonVO vo = DozerMapper.parseObject(personRepository.save(entity), PersonVO.class);
+        var entity = DozerMapper.parseObject(person, Person.class);
+        var vo = DozerMapper.parseObject(personRepository.save(entity), PersonVO.class);
+        vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel());
         return vo;
     }
 
     public PersonVOV2 createV2(PersonVOV2 person) {
         logger.info("Criando pessoa v2");
-        Person entity = personV2Mapper.convertVoToEntity(person);
-        PersonVOV2 vo = personV2Mapper.convertEntityToVo(personRepository.save(entity));
+        var entity = personV2Mapper.convertVoToEntity(person);
+        var vo = personV2Mapper.convertEntityToVo(personRepository.save(entity));
+        vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel());
         return vo;
     }
 
     public PersonVO update(PersonVO person) {
         logger.info("Atualizando pessoa");
         
-        var entity = personRepository.findById(person.getId())
+        var entity = personRepository.findById(person.getKey())
         .orElseThrow(() -> new ResourceNotFoundException("Nenhuma pessoa encontrada"));
         
         entity.setFirstName(person.getFirstName());
@@ -72,6 +83,7 @@ public class PersonService {
         entity.setaddress(person.getaddress());
 
         var vo = DozerMapper.parseObject(personRepository.save(entity), PersonVO.class);
+        vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel());
         return vo;
     }
 

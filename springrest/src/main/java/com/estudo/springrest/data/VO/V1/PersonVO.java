@@ -1,14 +1,21 @@
 package com.estudo.springrest.data.VO.V1;
 
+import java.io.Serial;
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.github.dozermapper.core.Mapping;
+import org.springframework.hateoas.RepresentationModel;
 
-@JsonPropertyOrder({"id", "firstName", "lastName", "gender", "address"})
-public class PersonVO implements Serializable {
+@JsonPropertyOrder({"key", "firstName", "lastName", "gender", "address"})
+public class PersonVO extends RepresentationModel<PersonVO> implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    @JsonProperty("id")
+    @Mapping("id")
+    private Long key;
     private String firstName;
     private String lastName;
     private String address;
@@ -17,12 +24,12 @@ public class PersonVO implements Serializable {
     public PersonVO() {
     }
 
-    public Long getId() {
-        return this.id;
+    public Long getKey() {
+        return this.key;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setKey(Long key) {
+        this.key = key;
     }
 
     public String getFirstName() {
@@ -61,7 +68,7 @@ public class PersonVO implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((key == null) ? 0 : key.hashCode());
         result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
         result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
         result = prime * result + ((address == null) ? 0 : address.hashCode());
@@ -78,10 +85,10 @@ public class PersonVO implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         PersonVO other = (PersonVO) obj;
-        if (id == null) {
-            if (other.id != null)
+        if (key == null) {
+            if (other.key != null)
                 return false;
-        } else if (!id.equals(other.id))
+        } else if (!key.equals(other.key))
             return false;
         if (firstName == null) {
             if (other.firstName != null)
@@ -99,10 +106,7 @@ public class PersonVO implements Serializable {
         } else if (!address.equals(other.address))
             return false;
         if (gender == null) {
-            if (other.gender != null)
-                return false;
-        } else if (!gender.equals(other.gender))
-            return false;
-        return true;
+            return other.gender == null;
+        } else return gender.equals(other.gender);
     }
 }

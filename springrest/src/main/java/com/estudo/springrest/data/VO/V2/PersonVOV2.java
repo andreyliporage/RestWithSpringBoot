@@ -1,12 +1,16 @@
 package com.estudo.springrest.data.VO.V2;
 
+import org.springframework.hateoas.RepresentationModel;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
-public class PersonVOV2 implements Serializable {
+public class PersonVOV2 extends RepresentationModel<PersonVOV2> implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    private Long key;
     private String firstName;
     private String lastName;
     private String address;
@@ -16,12 +20,12 @@ public class PersonVOV2 implements Serializable {
     public PersonVOV2() {
     }
 
-    public Long getId() {
-        return this.id;
+    public Long getKey() {
+        return this.key;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setKey(Long key) {
+        this.key = key;
     }
 
     public String getFirstName() {
@@ -68,7 +72,7 @@ public class PersonVOV2 implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((key == null) ? 0 : key.hashCode());
         result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
         result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
         result = prime * result + ((address == null) ? 0 : address.hashCode());
@@ -86,10 +90,10 @@ public class PersonVOV2 implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         PersonVOV2 other = (PersonVOV2) obj;
-        if (id == null) {
-            if (other.id != null)
+        if (key == null) {
+            if (other.key != null)
                 return false;
-        } else if (!id.equals(other.id))
+        } else if (!key.equals(other.key))
             return false;
         if (firstName == null) {
             if (other.firstName != null)
@@ -112,11 +116,8 @@ public class PersonVOV2 implements Serializable {
         } else if (!gender.equals(other.gender))
             return false;
         if (birthday == null) {
-            if (other.birthday != null)
-                return false;
-        } else if (!birthday.equals(other.birthday))
-            return false;
-        return true;
+            return other.birthday == null;
+        } else return birthday.equals(other.birthday);
     }
 
     
